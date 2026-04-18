@@ -23,12 +23,13 @@ model = load_model('vgg16_skin_cancer.h5')
 os.makedirs(UPLOAD_FOLDER,exist_ok=True)
 
 #conn à base de données
+#https://console.clever-cloud.com/organisations/user_0b13559e-b081-4d51-ab9e-28631f9e4263/addons/mysql/addon_a8a3476d-205e-4c84-a7db-adc7d8dc30e6
 def get_db_connection():
     conn = mysql.connector.Connect(
-        host='localhost',
-        user='root',
-        password='',
-        database='skin_cancer_db'
+        host='bqynuhxhafc1xfwlg1r2-mysql.services.clever-cloud.com',
+        user='umx9khy5fnq1ovdr',
+        password='YJoEAII15UbiNPSIC0DG',
+        database='bqynuhxhafc1xfwlg1r2'
     )
     return conn
 
