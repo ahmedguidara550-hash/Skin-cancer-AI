@@ -1,4 +1,4 @@
-#sue XAMPP
+#sur XAMPP
 CREATE DATABASE skin_cancer_db;
 USE skin_cancer_db;
 
