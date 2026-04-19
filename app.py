@@ -4,7 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 #les outils pour IA
 import tensorflow as tf 
-from tensorflow.keras.models import load_model
+#from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing  import image 
 import numpy as np 
 import random
@@ -17,7 +17,16 @@ app.secret_key = "super_cle_secrete_projet_ai"
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 #chargement du modele
-model = load_model('vgg16_skin_cancer.h5')
+#model = load_model('vgg16_skin_cancer.h5')
+# --- CHARGEMENT DU MODELE TFLITE ---
+# On initialise l'interpréteur avec le nouveau fichier
+interpreter = tf.lite.Interpreter(model_path="model.tflite")
+interpreter.allocate_tensors()
+
+# On récupère les "tuyaux" d'entrée et de sortie de l'IA
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+# -----------------------------------
 
 #creà du dossier
 os.makedirs(UPLOAD_FOLDER,exist_ok=True)
@@ -120,7 +129,21 @@ def predict():
         img_array = np.expand_dims(img_array,axis=0)
         img_array /= 255.0
 
-        prediction = model.predict(img_array)
+        # --- NOUVELLE PARTIE (Prédiction TFLite) ---
+        # On force le format en float32 (TFLite est strict là-dessus)
+        img_array = img_array.astype(np.float32)
+
+        # On injecte l'image dans l'IA
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+
+        # On lance le calcul
+        interpreter.invoke()
+
+        # On récupère le résultat
+        prediction = interpreter.get_tensor(output_details[0]['index'])
+        # -------------------------------------------
+
+        #prediction = model.predict(img_array)
         probability = float(prediction[0][0])
         
 
